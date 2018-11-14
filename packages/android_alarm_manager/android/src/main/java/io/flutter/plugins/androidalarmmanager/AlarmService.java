@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import io.flutter.plugin.common.MethodChannel;
@@ -192,13 +193,21 @@ public class AlarmService extends Service {
       if (repeating) {
         manager.setRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.setExact(clock, startMillis, pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          manager.setExactAndAllowWhileIdle(clock, startMillis, pendingIntent);
+        } else {
+          manager.setExact(clock, startMillis, pendingIntent);
+        }
       }
     } else {
       if (repeating) {
         manager.setInexactRepeating(clock, startMillis, intervalMillis, pendingIntent);
       } else {
-        manager.set(clock, startMillis, pendingIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          manager.setAndAllowWhileIdle(clock, startMillis, pendingIntent);
+        } else {
+          manager.set(clock, startMillis, pendingIntent);
+        }
       }
     }
   }
